@@ -114,8 +114,47 @@ To create a view showing the columns as listed in the above table, I issued the 
 
 ![image](https://github.com/user-attachments/assets/110646f1-546c-4449-b91e-30e333343d54)
 
+-2. Write and execute a SQL statement that returns just the school name and leaders rating from the view.
 
+ To pwerform this task, I issued the followwing query statement:
 
+          SELECT school_name, leaders_rating
+          FROM chicago_public_schools_view 
 
+![image](https://github.com/user-attachments/assets/bee76efa-f51c-4916-9edc-b9603aefeea6)
 
+# Task C: Creating a Stored Procedure
+
+The icon fields are calculated based on the value in the corresponding score field. You need to make sure that when a score field is updated, the icon field is updated too. To do this, you will write a stored procedure that receives the school id and a leaders score as input parameters, calculates the icon setting and updates the fields appropriately.
+
+-1. Write the structure of a query to create or replace a stored procedure called UPDATE_LEADERS_SCORE that takes a in_School_ID parameter as an integer and a in_Leader_Score parameter as an integer.
+
+To pwerform this task, I issued the followwing query statement:
+
+          CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+                      in_School_ID INT,
+                      in_Leader_Score INT
+                    )
+          BEGIN
+    --Update the score field
+          UPDATE school_table
+          SET leader_score = in_Leader_Score
+          WHERE school_id = in_School_ID;
+    -- Calculate the icon based on the updated score
+          DECLARE v_Icon VARCHAR(50);
+          IF in_Leader_Score >= 90 THEN
+          SET v_Icon = 'Gold';
+       ELSIF in_Leader_Score >= 75 THEN
+          SET v_Icon = 'Silver';
+          ELSIF in_Leader_Score >= 50 THEN
+          SET v_Icon = 'Bronze';
+          ELSE
+        SET v_Icon = 'No Badge';
+        END IF;          
+    -- Update the icon field
+        UPDATE school_table
+              SET leader_icon = v_Icon
+              WHERE school_id = in_School_ID;
+
+          END;
 
