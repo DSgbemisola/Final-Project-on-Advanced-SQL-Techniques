@@ -116,7 +116,7 @@ To create a view showing the columns as listed in the above table, I issued the 
 
 -2. Write and execute a SQL statement that returns just the school name and leaders rating from the view.
 
- To pwerform this task, I issued the followwing query statement:
+ To perform this task, I issued the followwing query statement:
 
           SELECT school_name, leaders_rating
           FROM chicago_public_schools_view 
@@ -129,7 +129,7 @@ The icon fields are calculated based on the value in the corresponding score fie
 
 -1. Write the structure of a query to create or replace a stored procedure called UPDATE_LEADERS_SCORE that takes a in_School_ID parameter as an integer and a in_Leader_Score parameter as an integer.
 
-To pwerform this task, I issued the followwing query statement:
+To perform this task, I issued the followwing query statement:
 
           CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
                       in_School_ID INT,
