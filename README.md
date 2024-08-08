@@ -69,7 +69,52 @@ In exploring the tables within the database, the table was selected to view the 
 
 ![image](https://github.com/user-attachments/assets/1bb622f2-b7ee-49ce-b0be-048f991b918b)
 
-# Task C: Tackling real problems using SQL queries. 
+# Task C: Writing and excuting query commands to solve real-world problems
+
+-1. Write and execute a SQL query to list the school names, community names and average attendance for communities with a hardship index of 98.
+
+I tackled this problem using the following query statement:
+
+          SELECT CP.name_of_school, CP.community_area_name, CP.average_student_attendance
+          FROM chicago_public_schools AS CP
+          LEFT JOIN chicago_socioeconomic_data AS CS
+          ON CP.community_area_number = CAST(CS.community_area_number AS INTEGER)
+          WHERE CS.hardship_index = '98';
+
+![image](https://github.com/user-attachments/assets/0e2ddeb1-0256-4857-850b-8761657e43e4)
+
+
+-2. Write and execute a SQL query to list all crimes that took place at a school. Include case number, crime type and community name.
+
+I tackled this problem using the following query statement:
+
+          SELECT CC.case_number, CC.primary_type, CS.community_area_name, CC.location_description
+          FROM chicago_crime AS CC
+          LEFT JOIN chicago_socioeconomic_data AS CS
+          ON CC.community_area_number = CS.community_area_number 
+          WHERE location_description LIKE '%SCHOOL%';
+
+![image](https://github.com/user-attachments/assets/a4f320cd-f13d-40a4-b78d-bf72014b979a)
+
+# Task B: Creating a View
+
+For privacy reasons, create a view that enables users to select just the school name and the icon fields from the CHICAGO_PUBLIC_SCHOOLS table. By providing a view, you can ensure that users cannot see the actual scores given to a school, just the icon associated with their score. You should define new names for the view columns to obscure the use of scores and icons in the original table.
+
+-1. Write and execute a SQL statement to create a view showing the columns listed in the following table, with new column names as shown in the second column.
+
+![image](https://github.com/user-attachments/assets/406a466b-4259-4b98-82d0-0904a742434c)
+
+To create a view showing the columns as listed in the above table, I issued the followwing query statement:
+
+          CREATE VIEW chicago_public_schools_view (School_Name, Safety_Rating, Family_Rating, Environment_Rating, Instruction_Rating,	Leaders_Rating, Teachers_Rating)
+          AS SELECT name_of_school, safety_icon, family_involvement_icon, environment_icon, instruction_icon, leaders_icon, teachers_icon	
+          FROM chicago_public_schools; 
+
+          SELECT * FROM chicago_public_schools_view 
+
+![image](https://github.com/user-attachments/assets/110646f1-546c-4449-b91e-30e333343d54)
+
+
 
 
 
