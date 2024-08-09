@@ -132,29 +132,89 @@ The icon fields are calculated based on the value in the corresponding score fie
 To perform this task, I issued the followwing query statement:
 
           CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
-                      in_School_ID INT,
-                      in_Leader_Score INT
-                    )
+              in_School_ID INT,
+              in_Leader_Score INT
+          )
+          LANGUAGE plpgsql
+          AS $$
           BEGIN
-    --Update the score field
-          UPDATE school_table
-          SET leader_score = in_Leader_Score
-          WHERE school_id = in_School_ID;
-    -- Calculate the icon based on the updated score
-          DECLARE v_Icon VARCHAR(50);
-          IF in_Leader_Score >= 90 THEN
-          SET v_Icon = 'Gold';
-       ELSIF in_Leader_Score >= 75 THEN
-          SET v_Icon = 'Silver';
-          ELSIF in_Leader_Score >= 50 THEN
-          SET v_Icon = 'Bronze';
-          ELSE
-        SET v_Icon = 'No Badge';
-        END IF;          
-    -- Update the icon field
-        UPDATE school_table
-              SET leader_icon = v_Icon
-              WHERE school_id = in_School_ID;
-
+              -- Add logic here (e.g., updating score and icon fields)
           END;
+          $$;
+          
+![image](https://github.com/user-attachments/assets/6e6cbc8b-8d53-420d-afb8-39008a15a032)
 
+-2. Inside your stored procedure, write a SQL statement to update the Leaders_Score field in the CHICAGO_PUBLIC_SCHOOLS table for the school identified by in_School_ID to the value in the in_Leader_Score parameter.
+
+To perform this task, I issued the followwing query statement:
+
+          CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+              in_School_ID INT,
+              in_Leader_Score INT
+          )
+          LANGUAGE plpgsql
+          AS $$
+          BEGIN
+              -- Update the Leaders_Score field in the CHICAGO_PUBLIC_SCHOOLS table
+              UPDATE CHICAGO_PUBLIC_SCHOOLS
+              SET Leaders_Score = in_Leader_Score
+              WHERE School_ID = in_School_ID;
+          END;
+          $$;
+
+![image](https://github.com/user-attachments/assets/8487cedc-ea74-4a68-8409-c6082c7f6e0c)
+
+-3. Inside your stored procedure, write a SQL IF statement to update the Leaders_Icon field in the CHICAGO_PUBLIC_SCHOOLS table for the school identified by in_School_ID using the following information.
+
+![image](https://github.com/user-attachments/assets/7705b3b6-44b6-4875-98f9-df55751f6c0f)
+
+To perform this task, I issued the followwing query statement:
+
+          CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+              in_School_ID INT,
+              in_Leader_Score INT
+          )
+          LANGUAGE plpgsql
+          AS $$
+          BEGIN
+              -- Update the Leaders_Score field
+              UPDATE CHICAGO_PUBLIC_SCHOOLS
+              SET Leaders_Score = in_Leader_Score
+              WHERE School_ID = in_School_ID;
+
+              -- Determine the appropriate icon based on the score
+              IF in_Leader_Score BETWEEN 80 AND 99 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Very strong'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 60 AND 79 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Strong'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 40 AND 59 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Average'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 20 AND 39 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Weak'
+                  WHERE School_ID = in_School_ID;
+              ELSE
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Very weak'
+                  WHERE School_ID = in_School_ID;
+              END IF;
+          END;
+          $$;
+
+![image](https://github.com/user-attachments/assets/5d212c86-2cd1-4c83-afe2-2b89b86b2ea5)
+
+-4. Write a query to call the stored procedure, passing a valid school ID and a leader score of 50, to check that the procedure works as expected.
+
+To perform this task, I issued the followwing query statement:
+
+          CALL UPDATE_LEADERS_SCORE(1234, 50);
+
+![image](https://github.com/user-attachments/assets/b1ee04d7-4563-4166-bd76-1ebaf28a10b7)
+
+-5. 
