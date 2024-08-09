@@ -217,4 +217,134 @@ To perform this task, I issued the followwing query statement:
 
 ![image](https://github.com/user-attachments/assets/b1ee04d7-4563-4166-bd76-1ebaf28a10b7)
 
--5. 
+-5. Update your stored procedure definition. Add a generic ELSE clause to the IF statement that rolls back the current work if the score did not fit any of the preceding categories.
+
+To perform this task, I issued the followwing query statement:
+
+          CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+              in_School_ID INT,
+              in_Leader_Score INT
+          )
+          LANGUAGE plpgsql
+          AS $$
+          BEGIN
+              -- Start a transaction block
+              BEGIN
+                  -- Update the Leaders_Score field
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Score = in_Leader_Score
+                  WHERE School_ID = in_School_ID;
+
+                  -- Determine the appropriate icon based on the score
+                  IF in_Leader_Score BETWEEN 80 AND 99 THEN
+                      UPDATE CHICAGO_PUBLIC_SCHOOLS
+                      SET Leaders_Icon = 'Very strong'
+                      WHERE School_ID = in_School_ID;
+                  ELSIF in_Leader_Score BETWEEN 60 AND 79 THEN
+                      UPDATE CHICAGO_PUBLIC_SCHOOLS
+                      SET Leaders_Icon = 'Strong'
+                      WHERE School_ID = in_School_ID;
+                  ELSIF in_Leader_Score BETWEEN 40 AND 59 THEN
+                      UPDATE CHICAGO_PUBLIC_SCHOOLS
+                      SET Leaders_Icon = 'Average'
+                      WHERE School_ID = in_School_ID;
+                  ELSIF in_Leader_Score BETWEEN 20 AND 39 THEN
+                      UPDATE CHICAGO_PUBLIC_SCHOOLS
+                      SET Leaders_Icon = 'Weak'
+                      WHERE School_ID = in_School_ID;
+                  ELSE
+                      -- Roll back if the score is outside the valid range
+                      RAISE EXCEPTION 'Invalid score: %', in_Leader_Score;
+                  END IF;
+
+                  -- Commit the transaction if everything is fine
+                  COMMIT;
+              EXCEPTION
+                  WHEN OTHERS THEN
+                      -- Roll back in case of any errors
+                      ROLLBACK;
+                      RAISE;
+              END;
+          END;
+          $$;
+
+![image](https://github.com/user-attachments/assets/373edaf5-66c5-4b2d-90e4-828b5091a675)
+
+-6. Update your stored procedure definition again. Add a statement to commit the current unit of work at the end of the procedure.
+
+To perform this task, I issued the followwing query statement:
+
+         CREATE OR REPLACE PROCEDURE UPDATE_LEADERS_SCORE (
+              in_School_ID INT,
+              in_Leader_Score INT
+          )
+          LANGUAGE plpgsql
+          AS $$
+          BEGIN
+              -- Update the Leaders_Score field
+              UPDATE CHICAGO_PUBLIC_SCHOOLS
+              SET Leaders_Score = in_Leader_Score
+              WHERE School_ID = in_School_ID;
+
+              -- Determine the appropriate icon based on the score
+              IF in_Leader_Score BETWEEN 80 AND 99 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Very strong'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 60 AND 79 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Strong'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 40 AND 59 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Average'
+                  WHERE School_ID = in_School_ID;
+              ELSIF in_Leader_Score BETWEEN 20 AND 39 THEN
+                  UPDATE CHICAGO_PUBLIC_SCHOOLS
+                  SET Leaders_Icon = 'Weak'
+                  WHERE School_ID = in_School_ID;
+              ELSE
+                  -- Raise an exception for invalid scores
+                  RAISE EXCEPTION 'Invalid score: %', in_Leader_Score;
+              END IF;
+
+              -- No explicit COMMIT or ROLLBACK needed
+          END;
+          $$;
+
+![image](https://github.com/user-attachments/assets/7853dd50-3a19-4971-b927-1bbd1faef8d7)
+
+-7. Write and run one query to check that the updated stored procedure works as expected when you use a valid score of 38.
+
+To perform this task, I issued the followwing query statement:
+
+          CALL UPDATE_LEADERS_SCORE(1, 38);
+
+![image](https://github.com/user-attachments/assets/ce77264f-5612-414d-ae48-dd9075ed09f4)
+
+8. Write and run another query to check that the updated stored procedure works as expected when you use an invalid score of 101.
+
+To perform this task, I issued the followwing query statement:
+
+          -- Call the stored procedure with an invalid score of 101
+          DO $$
+          BEGIN
+              BEGIN
+                  -- Attempt to call the procedure with an invalid score
+                  CALL UPDATE_LEADERS_SCORE(1, 101);
+              EXCEPTION
+                  WHEN others THEN
+                      -- Handle the exception and print a message
+                      RAISE NOTICE 'Caught exception: %', SQLERRM;
+              END;
+          END;
+          $$;
+
+          -- Query to check if the updates were applied correctly or if they were rolled back
+          SELECT School_ID, Leaders_Score, Leaders_Icon
+          FROM CHICAGO_PUBLIC_SCHOOLS
+          WHERE School_ID = 1;
+
+![image](https://github.com/user-attachments/assets/22846d7c-4960-4362-8022-256643f65314)
+
+
